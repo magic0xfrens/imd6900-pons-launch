@@ -48,6 +48,11 @@ It replaces Robinhood's old IMDSTR market:
    - `setPayees` (owner, up to 8 payees, shares summing to 10,000 bps) brings the perps pool in once it exists. The
      plan: 70% pot, 10% perps, 20% ops.
    - A payee that refuses ETH keeps its share here for the next split.
+   - Before graduation, `harvest` books and claims the curve's fees itself. After graduation, the Uniswap pool's fees
+     are part in the coin, and only Pons' fee sweep operator may convert them (a creator's own `sweepPoolFees` reverts
+     `InternalSwapRequiresOperator`, for every creator). Pons' keeper runs it for every pool about hourly, and anyone
+     can: `operator.observe(poolId)` a few times ~110 s apart, then `operator.sweepPool(poolId)` (one sweep an hour).
+     The ETH lands in Pons' escrow for this contract and `harvest` claims it (`test/Graduated.fork.t.sol`).
    - `handOff` passes the creator fees to a successor distributor.
 
 5. **Only the timelock can take ETH out after the launch.** After the launch, ETH leaves only through `split` or
