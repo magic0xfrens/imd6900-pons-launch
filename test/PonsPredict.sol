@@ -105,6 +105,13 @@ library PonsPredict {
         });
     }
 
+    /// @notice Where `salt` puts the coin and its curve, for the details the launcher holds now
+    function predict(IMD6900PonsLaunch l, bytes32 salt) internal view returns (address token, address curve) {
+        (IDeployerView deployer, LaunchDeployment memory p) = deployment(l);
+        p.salt = salt;
+        return deployer.predictLaunchAddresses(p);
+    }
+
     /// @notice The first salt from `start` within `tries` whose coin address starts with `prefix` (hex digits, e.g.
     ///         "6900"); `found` false if none
     function mine(IMD6900PonsLaunch l, bytes memory prefix, uint256 start, uint256 tries)
